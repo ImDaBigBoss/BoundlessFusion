@@ -1,13 +1,7 @@
 build:
-	@echo "\nBuilding desktop..."
-	@make -C desktop build
-
-	@echo "\nBuilding web..."
-	@make -C web build
+	@make -C platforms build
 
 clean:
-	@echo "\nCleaning desktop..."
-	@make -C desktop clean
+	@make -C platforms clean
 
-	@echo "\nCleaning web..."
-	@make -C web clean
+.PHONY: build clean

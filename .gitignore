@@ -1,7 +1,4 @@
-/desktop/obj
-/desktop/bin
-/desktop/dependencies/glfw/*
-
-/web/obj
-/web/bin
-/web/dependencies/emsdk/*
+/platforms/*/obj
+/platforms/*/bin
+/platforms/desktop/dependencies/glfw/*
+/platforms/web/dependencies/emsdk/*

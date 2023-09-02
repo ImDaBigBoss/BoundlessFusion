@@ -26,7 +26,7 @@ uint32_t colour_1 = 0;
 uint32_t colour_2 = 0;
 void lib_loop() {
     frame_tick();
-    //debug_info("Frame took %f ms (%d FPS)", frame_time, fps);
+    debug_info("Frame took %f ms (%d FPS)", frame_time, fps);
 
     colour_2 += 1;
     colour_1 = colour_2;
