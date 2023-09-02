@@ -1,0 +1,84 @@
+<!doctypehtml>
+<html lang=en-us>
+  <head>
+    <title>Boundless Fusion</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      #canvas {
+        background-color: #000;
+        display: block;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <script>
+      const display_canvas = document.getElementById("canvas");
+      display_canvas.addEventListener("webglcontextlost", function(e) {
+        alert("WebGL context lost. You will need to reload the page.");
+        e.preventDefault();
+      }, !1);
+
+      //Canvas sizing
+      const canvas_ctx = canvas.getContext("2d");
+      canvas_ctx.canvas.width = window.innerWidth;
+      canvas_ctx.canvas.height = window.innerHeight;
+      window.addEventListener("resize", (event) => {
+        alert("Resizing the window is not supported. Please reload the page.");
+      });
+
+      //WASM module setup
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: function(msg) {
+          if (msg.indexOf("[INFO]") === 0) {
+            console.info(msg);
+          } else if (msg.indexOf("[WARN]") === 0) {
+            console.warn(msg);
+          } else if (msg.indexOf("[ERROR]") === 0) {
+            console.error(msg);
+          } else {
+            console.log(msg);
+          }
+        },
+
+        canvas: display_canvas,
+
+        setStatus: function (message) {
+          if (message === "") {
+            return;
+          }
+          console.log(message);
+        },
+
+        totalDependencies: 0,
+        monitorRunDependencies: function (deps) {
+          this.totalDependencies = Math.max(this.totalDependencies, deps)
+        }
+      };
+
+      //Error handling
+      window.onerror = function (e) {
+        alert("Exception thrown, see JavaScript console");
+        Module.setStatus = function (e) {
+          console.log("[POST EXCEPTION] " + e);
+        };
+      }
+    </script>
+    <script src="boundless_fusion.js" async></script>
+  </body>
+</html>

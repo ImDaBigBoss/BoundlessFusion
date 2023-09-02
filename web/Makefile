@@ -7,29 +7,32 @@ CSRC = $(filter-out ./dependencies/%, $(call rwildcard,.,*.cpp))
 OBJS = $(patsubst %.cpp, $(OBJDIR)/%.o, $(CSRC))
 
 OPTIMIZE = -O3
-CFLAGS = $(OPTIMIZE) -Wall -Iinclude -Idependencies/glfw/include -Ilibrary/include
+CFLAGS = $(OPTIMIZE) -Wall -Iinclude -Ilibrary/include -Idependencies/emsdk/upstream/emscripten/cache/sysroot/include
 
-LDFLAGS = $(OPTIMIZE) -lstdc++ dependencies/glfw/src/libglfw3.a
-ifeq ($(shell uname), Darwin)
-	LDFLAGS += -framework Cocoa -framework OpenGL -framework IOKit
-endif
+LDFLAGS = $(OPTIMIZE)
 
-build: deps link
+EMXX = ./dependencies/emsdk/upstream/emscripten/em++
+
+build: deps link html
 
 link: $(OBJS)
 	@echo Link $^
-	@g++ $(LDFLAGS) $^ -o $(BUILDDIR)/boundless_fusion
+	@$(EMXX) $(LDFLAGS) $^ -o $(BUILDDIR)/boundless_fusion.js
 
 	@echo "Compiled!"
 
 $(OBJDIR)/%.o: %.cpp
 	@echo "Compile $^ -> $@"
 	@mkdir -p $(@D)
-	@g++ $(CFLAGS) -c -o $@ $^
+	@$(EMXX) $(CFLAGS) -c -o $@ $^
 
 deps:
 	@echo "Building dependencies..."
 	@cd dependencies/ && make build >> /dev/null
+
+html:
+	@echo "Building html..."
+	@cp base_html.html $(BUILDDIR)/index.html
 
 clean:
 	@rm -rf $(OBJDIR)/*

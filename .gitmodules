@@ -1,0 +1,15 @@
+[submodule "desktop/dependencies/bimg"]
+	path = desktop/dependencies/bimg
+	url = https://github.com/bkaradzic/bimg.git
+[submodule "desktop/dependencies/bx"]
+	path = desktop/dependencies/bx
+	url = https://github.com/bkaradzic/bx.git
+[submodule "desktop/dependencies/bgfx"]
+	path = desktop/dependencies/bgfx
+	url = https://github.com/bkaradzic/bgfx.git
+[submodule "desktop/dependencies/glfw"]
+	path = desktop/dependencies/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "web/dependencies/emsdk"]
+	path = web/dependencies/emsdk
+	url = https://github.com/emscripten-core/emsdk.git
