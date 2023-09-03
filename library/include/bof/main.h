@@ -1,6 +1,6 @@
 #pragma once
 
-void lib_init();
+void lib_init(int argc, char** argv);
 
 void lib_loop();
 

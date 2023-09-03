@@ -10,7 +10,7 @@ extern uint32_t* screen_buffer;
 void extern_screen_init(); //Extern
 void screen_init();
 
-void window_resized();
+void allocate_buffer(); //Extern
 
 void screen_frame(); //Extern
 

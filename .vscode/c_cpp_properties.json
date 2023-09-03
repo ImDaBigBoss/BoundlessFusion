@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Boundless Fusion",
+            "includePath": [
+                "${workspaceFolder}/library/include",
+                "${workspaceFolder}/platforms/desktop/dependencies/glfw/include",
+                "${workspaceFolder}/platforms/web/dependencies/emsdk/upstream/emscripten/cache/sysroot/include"
+            ]
+        }
+    ],
+    "version": 4
+}

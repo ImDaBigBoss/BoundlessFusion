@@ -1,17 +1,17 @@
-#include <lib_main.h>
+#include <bof/main.h>
 
-#include <io/debug.h>
-#include <io/screen.h>
+#include <bof/io/debug.h>
+#include <bof/io/screen.h>
 
-#include <util/rainbow.h>
-#include <util/fps.h>
+#include <bof/util/rainbow.h>
+#include <bof/util/fps.h>
 
 #include <stdlib.h>
 #include <signal.h>
 
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC / 1000)
 
-void lib_init() {
+void lib_init(int argc, char** argv) {
     debug_info("Boundless Fusion v1.0.0");
 
     //Component initialization

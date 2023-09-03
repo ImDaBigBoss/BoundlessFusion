@@ -37,7 +37,8 @@
       canvas_ctx.canvas.width = window.innerWidth;
       canvas_ctx.canvas.height = window.innerHeight;
       window.addEventListener("resize", (event) => {
-        alert("Resizing the window is not supported. Please reload the page.");
+        canvas_ctx.canvas.width = window.innerWidth;
+        canvas_ctx.canvas.height = window.innerHeight;
       });
 
       //WASM module setup

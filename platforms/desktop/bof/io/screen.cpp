@@ -1,10 +1,11 @@
-#include <io/screen.h>
-#include <io/debug.h>
+#include <bof/io/screen.h>
+#include <bof/io/debug.h>
 
-#include <lib_config.h>
-#include <lib_main.h>
+#include <bof/config.h>
+#include <bof/main.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 #include <GLFW/glfw3.h>
 
@@ -37,7 +38,7 @@ void window_resized_int(GLFWwindow* window, int width, int height) {
     glRasterPos2f(-1, 1);
     glPixelZoom(1, -1);
 
-    window_resized();
+    allocate_buffer();
 }
 
 // --- Exposed functions ---
@@ -74,6 +75,16 @@ void extern_screen_init() {
 
     //Setup callbacks
     glfwSetWindowSizeCallback(window, window_resized_int);
+}
+
+void allocate_buffer() {
+    if (screen_buffer) {
+        free(screen_buffer);
+    }
+
+    buffer_size = screen_width * screen_height * sizeof(uint32_t);
+    screen_buffer = (uint32_t*) malloc(buffer_size);
+    memset(screen_buffer, 0, buffer_size);
 }
 
 void screen_frame() {
