@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/library/include",
                 "${workspaceFolder}/platforms/desktop/dependencies/glfw/include",
-                "${workspaceFolder}/platforms/web/dependencies/emsdk/upstream/emscripten/cache/sysroot/include"
+                "${workspaceFolder}/platforms/web/dependencies/emsdk/upstream/emscripten/cache/sysroot/include",
+                "${workspaceFolder}/tools/bof_assembler/include"
             ]
         }
     ],

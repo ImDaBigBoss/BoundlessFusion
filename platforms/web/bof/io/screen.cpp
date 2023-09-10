@@ -64,7 +64,7 @@ void screen_frame() {
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
             case SDL_QUIT:
-                lib_exit(EXIT_SUCCESS);
+                lib_exit(1);
                 break;
             default:
                 break;

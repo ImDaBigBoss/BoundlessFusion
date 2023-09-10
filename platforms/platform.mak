@@ -6,8 +6,8 @@ rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(su
 CSRC = $(filter-out ./dependencies/%, $(call rwildcard,.,*.cpp))
 OBJS = $(patsubst %.cpp, $(OBJDIR)/%.o, $(CSRC))
 
-OPTIMIZE = -O3
-CFLAGS += $(OPTIMIZE) -Wall -Iinclude -Ilibrary/include
+OPTIMIZE = -g
+CFLAGS += $(OPTIMIZE) -Wall -Iinclude -Ilibrary/include -std=c++11
 
 LDFLAGS += $(OPTIMIZE)
 

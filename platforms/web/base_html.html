@@ -1,4 +1,4 @@
-<!doctypehtml>
+<!doctype HTML>
 <html lang=en-us>
   <head>
     <title>Boundless Fusion</title>
@@ -46,6 +46,10 @@
         preRun: [],
         postRun: [],
         print: function(msg) {
+          if (msg === "") {
+            return;
+          }
+
           if (msg.indexOf("[INFO]") === 0) {
             console.info(msg);
           } else if (msg.indexOf("[WARN]") === 0) {

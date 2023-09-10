@@ -48,7 +48,7 @@ void extern_screen_init() {
     glfwSetErrorCallback(error_handle_code);
     if (!glfwInit()) {
         debug_error("Failed to initialize GLFW!");
-        lib_exit(EXIT_FAILURE);
+        lib_exit(1);
     }
 
     //Create window
@@ -56,7 +56,7 @@ void extern_screen_init() {
     if (!window) {
         debug_error("Failed to create GLFW window!");
         error_handle();
-        lib_exit(EXIT_FAILURE);
+        lib_exit(1);
     }
 
     glfwGetFramebufferSize(window, (int*) &screen_width, (int*) &screen_height);
@@ -89,7 +89,7 @@ void allocate_buffer() {
 
 void screen_frame() {
     if (glfwWindowShouldClose(window)) {
-        lib_exit(EXIT_SUCCESS);
+        lib_exit(1);
     }
 
     glDrawPixels(screen_width, screen_height, GL_RGBA, GL_UNSIGNED_BYTE, screen_buffer);
