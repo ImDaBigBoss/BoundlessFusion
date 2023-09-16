@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     }
 
     printf("Starting assembly...\n");
-    if (assemble(source, output)) {
+    if (assemble(source, output, 4096)) {
         printf("Done! Binary written to %s.\n", output_file);
     } else {
         printf("Assembly failed.\n");

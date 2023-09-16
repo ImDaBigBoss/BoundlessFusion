@@ -38,6 +38,17 @@ define_mnemonic(MOV) {
         append_opcode(0x12);
         append_opcode(*((cpu_register_t*) op1->value));
         append_opcode(*((cpu_register_t*) op2->value));
+
+        union disp_value_t {
+            int32_t value;
+            uint8_t bytes[4];
+        };
+        union disp_value_t disp_val;
+        disp_val.value = op1->displacement;
+
+        for (int i = 0; i < 4; i++) {
+            append_opcode(disp_val.bytes[i]);
+        }
     }
     //Address in register -> register
     // mov r1, [r2]
@@ -45,6 +56,17 @@ define_mnemonic(MOV) {
         append_opcode(0x13);
         append_opcode(*((cpu_register_t*) op1->value));
         append_opcode(*((cpu_register_t*) op2->value));
+
+        union disp_value_t {
+            int32_t value;
+            uint8_t bytes[4];
+        };
+        union disp_value_t disp_val;
+        disp_val.value = op2->displacement;
+
+        for (int i = 0; i < 4; i++) {
+            append_opcode(disp_val.bytes[i]);
+        }
     }
     //Label address -> register
     // mov r1, $label

@@ -47,7 +47,7 @@ void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size
                 lib_exit(2);
             }
 
-            memcpy((void*) ((uint64_t) pool->program_data + address), buffer, size);
+            memcpy((void*) (pool->program_data + address), buffer, size);
         } else if (address < pool->stack_start) {
             debug_error("Attempted to write to reserved memory\n");
             lib_exit(2);
@@ -59,7 +59,7 @@ void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size
                 lib_exit(2);
             }
 
-            memcpy((void*) ((uint64_t) pool->stack + stack_address), buffer, size);
+            memcpy((void*) (pool->stack_data + stack_address), buffer, size);
         }
 
         return;
@@ -99,7 +99,7 @@ void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size)
                 lib_exit(2);
             }
 
-            memcpy(buffer, (void*) ((uint64_t) pool->program_data + address), size);
+            memcpy(buffer, (void*) (pool->program_data + address), size);
         } else if (address < pool->stack_start) { //Memory after program data but before stack
             debug_error("Attempted to read from reserved memory\n");
             lib_exit(2);
@@ -111,7 +111,7 @@ void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size)
                 lib_exit(2);
             }
 
-            memcpy(buffer, (void*) ((uint64_t) pool->stack + stack_address), size);
+            memcpy(buffer, (void*) (pool->stack_data + stack_address), size);
         }
 
         return;
@@ -149,8 +149,9 @@ void init_pool(memory_pool_t* pool, game_program_t* program) {
     memset(pool, 0, sizeof(memory_pool_t));
 
     //Program data starts at 0
-    pool->program_data = program->data;
+    pool->program_data = (uint8_t*) program->data;
     pool->program_size = program->size;
+    pool->program_data[program->size] = 0xFF; //Halt instruction (we reserved the last byte for this in game_loader.cpp)
 
     //Stack
     pool->stack_start = program->size + 10; //10 bytes of padding
@@ -159,7 +160,7 @@ void init_pool(memory_pool_t* pool, game_program_t* program) {
     }
 
     pool->stack_size = BLOCK_SIZE;
-    pool->stack = malloc(pool->stack_size);
+    pool->stack_data = (uint64_t*) malloc(pool->stack_size);
 
     //Heap
     pool->heap_start = (pool->stack_start + pool->stack_size) + 10; //10 bytes of padding
@@ -173,7 +174,7 @@ void destroy_pool(memory_pool_t* pool) {
     debug_info("Destroying memory pool\n");
 
     free(pool->program_data);
-    free(pool->stack);
+    free(pool->stack_data);
 
     for (int i = 0; i < pool->block_count; i++) {
         free(pool->blocks[i]);

@@ -5,4 +5,4 @@
 
 #define MAX_OPERANDS 50
 
-bool assemble(FILE* source, FILE* output);
+bool assemble(FILE* source, FILE* output, int padding);

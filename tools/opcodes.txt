@@ -17,8 +17,8 @@
 -- Movement --
 0x10: mov, move a value into a register
 0x11: mov, move a register into another register
-0x12: mov, move a regoister into memory
-0x13: mov, move a value from memory into a register
+0x12: mov, move a register into memory - followed by an int32 displacement value
+0x13: mov, move a value from memory into a register - followed by an int32 displacement value
 
 -- Branching --
 ##WARNING##: These instructions will be followed by 01 (immediate) or 02 (register) and then the value or register

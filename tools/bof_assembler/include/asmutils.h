@@ -15,6 +15,7 @@ typedef struct {
     void* value;
     int size;
     bool indirect; //If true, the value is an address in a register
+    int32_t displacement; //Used for indirect operands
     operand_type_t type;
 } operand_t;
 

@@ -45,13 +45,13 @@ cool_function:
     pusha ; 44
     pushf ; 42
 
-    mov r1, $magical_num
-    mov r2, [r1]
-    mov r3, [r1]
-    mov r4, [r1]
+    mov r1, $magical_num ; 10 01 [ADDR]
+    mov r2, [r1] ; 13 02 01 00 00 00 00
+    mov r3, [r1 - 1] ; 13 03 01 FF FF FF FF
+    mov r4, [r1 + 2] ; 13 04 01 02 00 00 00
 
-    mov r2, 0xcafebabe
-    mov [r1], r2
+    mov r2, 0xcafebabe ; 10 02 be ba fe ca 00 00 00 00
+    mov [r1], r2 ; 12 01 02 00 00 00 00
 
     popf ; 43
     popa ; 45
@@ -61,3 +61,7 @@ cool_function:
 
 magical_num:
     db 0xdeadbeef
+    db 0x00
+    db 0x00
+    db 0x00
+    db 0x00

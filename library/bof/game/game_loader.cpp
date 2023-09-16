@@ -11,14 +11,14 @@
 game_vm_t virtual_machine;
 
 void read_game_file_v1(game_program_t* program, game_file_t* game_file) {
-    game_file_header_t* header = (game_file_header_t*) game_file->data;
+    uint8_t* data = (uint8_t*) game_file->data;
+    game_file_header_t* header = (game_file_header_t*) data;
 
-    uint32_t data_size = game_file->size - sizeof(game_file_header_t);
-    program->data = malloc(data_size);
-    memcpy(program->data, header + sizeof(game_file_header_t), data_size);
-    program->size = data_size;
+    program->size = header->size - sizeof(game_file_header_t);
+    program->data = malloc(program->size + 1); //+1 for halting instruction
+    memcpy(program->data, data + sizeof(game_file_header_t), program->size);
 
-    program->start_address = header->start_address;
+    program->start_address = header->start_address - sizeof(game_file_header_t); //Subtract header size to get correct address
 }
 
 void load_game() {
@@ -50,6 +50,10 @@ void load_game() {
 
     debug_info("Starting virual runtime...");
     vm_init(&virtual_machine, &program);
+
+    debug_info("Running game init...");
+    vm_run(&virtual_machine, program.start_address);
+    debug_info("Game loaded!");
 }
 
 void destroy_game() {

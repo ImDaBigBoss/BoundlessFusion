@@ -13,4 +13,4 @@ typedef struct {
     uint64_t start_address;
 } game_file_header_t;
 
-void write_exec(FILE* file, uint8_t* opcodes, uint64_t opcode_num);
+void write_exec(FILE* file, uint8_t* opcodes, uint64_t opcode_num, int padding);

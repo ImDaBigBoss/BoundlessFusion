@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+int start_padding = 0;
+
 bool parse_source_lvl1(char* source, lvl1_line_t** lines, int* line_num) {
     bool errors_found = false;
 
@@ -24,6 +26,7 @@ bool parse_source_lvl1(char* source, lvl1_line_t** lines, int* line_num) {
     bool comment = false;
     bool escape = false;
     bool is_string = false;
+    bool is_register_info = false;
     char string_char = 0;
 
     while (*source) {
@@ -35,7 +38,7 @@ bool parse_source_lvl1(char* source, lvl1_line_t** lines, int* line_num) {
             case '\t':
             case ';':
             case ',': {
-                if (comment) {
+                if (comment || is_register_info) {
                     break;
                 }
                 if (is_string) {
@@ -60,6 +63,7 @@ bool parse_source_lvl1(char* source, lvl1_line_t** lines, int* line_num) {
 
                 comment = false;
                 was_code = false;
+                is_register_info = false;
 
                 if (buffer_index == 0) {
                     break;
@@ -90,6 +94,24 @@ bool parse_source_lvl1(char* source, lvl1_line_t** lines, int* line_num) {
             default: { //By default, we just add the character to the buffer
                 if (comment) {
                     break;
+                }
+
+                if (current == '[') {
+                    if (is_register_info) {
+                        printf("Error line %d: Unexpected [\n", line_number + 1);
+                        errors_found = true;
+                        break;
+                    }
+
+                    is_register_info = true;
+                } else if (current == ']') {
+                    if (!is_register_info) {
+                        printf("Error line %d: Unexpected ]\n", line_number + 1);
+                        errors_found = true;
+                        break;
+                    }
+
+                    is_register_info = false;
                 }
 
                 if (!was_code) { //If this is the start of a new operand, we need to set this index as one
@@ -189,6 +211,7 @@ uint64_t* process_number(char* str, int line_num, bool can_be_register, bool* er
 
 operand_t process_operand(char* operand, int line_num, bool* errors_found) {
     operand_t return_op;
+    return_op.displacement = 0;
 
     if (operand[0] == '$') { //Operand is a label
         operand++;
@@ -236,7 +259,42 @@ operand_t process_operand(char* operand, int line_num, bool* errors_found) {
 
         if (operand[0] == '[' && operand[strlen(operand) - 1] == ']') { //Register used as an address
             return_op.indirect = true;
-            operand[strlen(operand) - 1] = 0;
+
+            //Find displacement
+            bool positive = true;
+            char* disp_str = strchr(operand, '+');
+            if (!disp_str) {
+                disp_str = strchr(operand, '-');
+                positive = false;
+            }
+            
+            if (disp_str) {
+                *disp_str = 0;
+                disp_str++; //Remove the + or -
+                disp_str[strlen(disp_str) - 1] = 0; //Remove the ]
+
+                uint64_t* displacement_ptr = process_number(disp_str, line_num, false, errors_found);
+                if (!displacement_ptr) {
+                    return return_op;
+                }
+                uint64_t displacement_val = *displacement_ptr;
+                free(displacement_ptr);
+
+                if (displacement_val > INT32_MAX) {
+                    printf("Error line %d: Displacement too large\n", line_num);
+                    *errors_found = true;
+                    return return_op;
+                }
+
+                return_op.displacement = displacement_val;
+                if (positive) {
+                    return_op.displacement = displacement_val;
+                } else {
+                    return_op.displacement = -displacement_val;
+                }
+            } else {
+                operand[strlen(operand) - 1] = 0;
+            }
             operand++;
         } else {
             return_op.indirect = false;
@@ -345,7 +403,7 @@ bool lex_source(lvl2_line_t** lines, int line_num, uint8_t** opcodes, int* opcod
             label_t* new_label = &label_definitions[current_label_definition_num];
             new_label->name = (char*) malloc(mnsize);
             memcpy(new_label->name, line->mnemonic, mnsize);
-            new_label->local_address = *opcode_num;
+            new_label->local_address = *opcode_num + start_padding;
             continue;
         }
 
@@ -431,7 +489,9 @@ bool lex_source(lvl2_line_t** lines, int line_num, uint8_t** opcodes, int* opcod
     return errors_found;
 }
 
-bool assemble(FILE* source, FILE* output) {
+bool assemble(FILE* source, FILE* output, int padding) {
+    start_padding = padding;
+
     //Get file size
     fseek(source, 0, SEEK_END);
     size_t file_size = ftell(source);
@@ -491,7 +551,7 @@ bool assemble(FILE* source, FILE* output) {
         return false;
     }
 
-    write_exec(output, opcodes, opcode_num);
+    write_exec(output, opcodes, opcode_num, padding);
 
     free(opcodes);
 
