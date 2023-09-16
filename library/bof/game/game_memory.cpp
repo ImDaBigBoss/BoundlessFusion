@@ -41,8 +41,15 @@ void expand_pool(memory_pool_t* pool, int blocks) {
 
 void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size) {
     if (address < pool->heap_start) {
-        if (address < pool->stack_start) {
-            debug_error("Attempted to write to reserved memory located before the stack\n");
+        if (address < pool->program_size) {
+            if (address + size > pool->program_size) {
+                debug_error("Attempted to write from program data outside of reserved memory\n");
+                lib_exit(2);
+            }
+
+            memcpy((void*) ((uint64_t) pool->program_data + address), buffer, size);
+        } else if (address < pool->stack_start) {
+            debug_error("Attempted to write to reserved memory\n");
             lib_exit(2);
         } else {
             uint64_t stack_address = address - pool->stack_start;
@@ -86,14 +93,14 @@ void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size
 
 void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size) {
     if (address < pool->heap_start) {
-        if (address < pool->program_size) {
+        if (address < pool->program_size) { //Program data
             if (address + size > pool->program_size) {
                 debug_error("Attempted to read from program data outside of reserved memory\n");
                 lib_exit(2);
             }
 
             memcpy(buffer, (void*) ((uint64_t) pool->program_data + address), size);
-        } else if (address < pool->stack_start) {
+        } else if (address < pool->stack_start) { //Memory after program data but before stack
             debug_error("Attempted to read from reserved memory\n");
             lib_exit(2);
         } else {

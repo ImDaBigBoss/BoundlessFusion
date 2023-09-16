@@ -25,6 +25,7 @@ typedef union {
         uint64_t r2;
         uint64_t r3;
         uint64_t r4;
+
         uint64_t sp; //Stack pointer
         uint64_t pc; //Program counter
     };

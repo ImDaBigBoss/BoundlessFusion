@@ -28,7 +28,8 @@ void lib_init(int argc, char** argv) {
 
 void lib_loop() {
     frame_tick();
-    debug_info("Frame took %f ms (%d FPS)", frame_time, fps);
+    //debug_info("Frame took %f ms (%d FPS)", frame_time, fps);
+    debug_raw("\nR1 = 0x%x, R2 = 0x%x\nR3 = 0x%x, R4 = 0x%x\nSP = 0x%x, PC = 0x%x\n", virtual_machine.registers.r1, virtual_machine.registers.r2, virtual_machine.registers.r3, virtual_machine.registers.r4, virtual_machine.registers.sp, virtual_machine.registers.pc);
 
     //TODO: Call the game loop
 

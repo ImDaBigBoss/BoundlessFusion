@@ -48,11 +48,35 @@ define_mnemonic(SUB);
 define_mnemonic(MUL);
 define_mnemonic(DIV);
 define_mnemonic(MOD);
+define_mnemonic(INC);
+define_mnemonic(DEC);
+
+define_mnemonic(AND);
+define_mnemonic(OR);
+define_mnemonic(SHL);
+define_mnemonic(SHR);
 
 define_mnemonic(MOV);
 
 define_mnemonic(CALL);
 define_mnemonic(RET);
+define_mnemonic(JMP);
+define_mnemonic(JE);
+define_mnemonic(JNE);
+define_mnemonic(JG);
+define_mnemonic(JGE);
+define_mnemonic(JL);
+define_mnemonic(JLE);
+
+define_mnemonic(CMP);
+define_mnemonic(SYSCALL);
+
+define_mnemonic(PUSH);
+define_mnemonic(POP);
+define_mnemonic(PUSHF);
+define_mnemonic(POPF);
+define_mnemonic(PUSHA);
+define_mnemonic(POPA);
 
 define_mnemonic(HLT);
 

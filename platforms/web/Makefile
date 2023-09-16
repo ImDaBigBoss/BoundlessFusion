@@ -3,7 +3,7 @@ OUTPUT_EXT = ".js"
 CC = ./dependencies/emsdk/upstream/emscripten/em++
 
 CFLAGS = -Idependencies/emsdk/upstream/emscripten/cache/sysroot/include
-LDFLAGS = -sFETCH -sASYNCIFY
+LDFLAGS = -sFETCH -sASYNCIFY -sALLOW_MEMORY_GROWTH
 
 include ../platform.mak
 

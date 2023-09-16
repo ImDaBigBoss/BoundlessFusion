@@ -1,26 +1,5 @@
 #include <asmutils.h>
 
-int get_R_reg_size(char* str) {
-    if (str[0] == '\0') {
-        return 8;
-    } else {
-        if (str[1] != '\0') {
-           return 0;
-        }
-
-        switch (str[0]) {
-            case 'D':
-                return 4;
-            case 'W':
-                return 2;
-            case 'L':
-                return 1;
-        }
-    }
-
-    return 0;
-}
-
 cpu_register_t get_register(char* str) {
     cpu_register_t return_reg = 0;
 

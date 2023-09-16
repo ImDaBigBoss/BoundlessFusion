@@ -357,11 +357,35 @@ bool lex_source(lvl2_line_t** lines, int line_num, uint8_t** opcodes, int* opcod
         check_mnemonic(MUL)
         check_mnemonic(DIV)
         check_mnemonic(MOD)
+        check_mnemonic(INC)
+        check_mnemonic(DEC)
+
+        check_mnemonic(AND)
+        check_mnemonic(OR)
+        check_mnemonic(SHL)
+        check_mnemonic(SHR)
 
         check_mnemonic(MOV)
 
         check_mnemonic(CALL)
         check_mnemonic(RET)
+        check_mnemonic(JMP)
+        check_mnemonic(JE)
+        check_mnemonic(JNE)
+        check_mnemonic(JG)
+        check_mnemonic(JGE)
+        check_mnemonic(JL)
+        check_mnemonic(JLE)
+
+        check_mnemonic(CMP)
+        check_mnemonic(SYSCALL)
+
+        check_mnemonic(PUSH)
+        check_mnemonic(POP)
+        check_mnemonic(PUSHF)
+        check_mnemonic(POPF)
+        check_mnemonic(PUSHA)
+        check_mnemonic(POPA)
 
         check_mnemonic(HLT)
 

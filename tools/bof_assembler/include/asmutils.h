@@ -41,6 +41,7 @@ typedef enum {
     R2,
     R3,
     R4,
+
     SP, //Stack pointer
     PC, //Program counter
 } cpu_register_t;

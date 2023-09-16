@@ -11,11 +11,8 @@
 
 0x08: and, bitwise and two registers
 0x09: or, bitwise or two registers
-0x0A: xor, bitwise xor two registers
-0x0B: not, bitwise not a register
-
-0x0C: shl, shift left a register
-0x0D: shr, shift right a register
+0x0A: shl, shift left a register
+0x0B: shr, shift right a register
 
 -- Movement --
 0x10: mov, move a value into a register
@@ -38,6 +35,7 @@
 -- Misc --
 0x30: cmp, compare two registers
 0x31: cmp, compare a register and a value
+0x32: syscall, call a system call
 
 -- Stack --
 0x40: push, push a register onto the stack
