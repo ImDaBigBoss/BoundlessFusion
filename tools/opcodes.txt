@@ -21,7 +21,7 @@
 0x13: mov, move a value from memory into a register - followed by an int32 displacement value
 
 -- Branching --
-##WARNING##: These instructions will be followed by 01 (immediate) or 02 (register) and then the value or register
+##WARNING##: These instructions will be followed by 01 (immediate) or 02 (register) and then the value or register, except for return
 0x20: call, call a memory address
 0x21: ret, return from a call
 0x22: jmp, jump to a memory address
@@ -42,7 +42,7 @@
 0x41: pop, pop off the stack into a register
 0x42: pushf, push the flags onto the stack
 0x43: popf, pop the flags off the stack
-0x44: pusha, push all registers onto the stack
-0x45: popa, pop all registers off the stack
+0x44: pusha, push all general purpose registers onto the stack (r1, r2, r3 and r4)
+0x45: popa, pops the registers off the stack
 
 0xFF: hlt, halt the CPU

@@ -95,7 +95,7 @@ void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size)
     if (address < pool->heap_start) {
         if (address < pool->program_size) { //Program data
             if (address + size > pool->program_size) {
-                debug_error("Attempted to read from program data outside of reserved memory\n");
+                debug_error("Attempted to read from program data outside of reserved memory %x %x %x\n", address, address + size, pool->program_size);
                 lib_exit(2);
             }
 

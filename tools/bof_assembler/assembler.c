@@ -447,7 +447,11 @@ bool lex_source(lvl2_line_t** lines, int line_num, uint8_t** opcodes, int* opcod
 
         check_mnemonic(HLT)
 
-        check_mnemonic(DB) //No opcode
+        //No opcodes
+        check_mnemonic(DB)
+        check_mnemonic(DW)
+        check_mnemonic(DDW)
+        check_mnemonic(DQW)
         else {
             printf("Error line %d: Unknown mnemonic \"%s\"\n", line->line_num, line->mnemonic);
             errors_found = true;

@@ -43,6 +43,7 @@ typedef struct {
 
 void vm_init(game_vm_t* vm, game_program_t* program);
 void vm_destroy(game_vm_t* vm);
+void vm_register_dump(game_vm_t* vm);
 
 void vm_stack_push(game_vm_t* vm, uint64_t value);
 uint64_t vm_stack_pop(game_vm_t* vm);

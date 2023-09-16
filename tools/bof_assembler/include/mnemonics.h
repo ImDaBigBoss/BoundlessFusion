@@ -80,4 +80,8 @@ define_mnemonic(POPA);
 
 define_mnemonic(HLT);
 
-define_mnemonic(DB); //No opcode
+//No opcodes
+define_mnemonic(DB);
+define_mnemonic(DW);
+define_mnemonic(DDW);
+define_mnemonic(DQW);
