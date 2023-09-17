@@ -2,15 +2,20 @@
 
 #include <stdint.h>
 
-extern uint32_t screen_width; //Extern
-extern uint32_t screen_height; //Extern
-extern uint32_t buffer_size;
-extern uint32_t* screen_buffer;
+#define SCREEN_MAX_WIDTH 4096
+#define SCREEN_MAX_HEIGHT 2160
+
+typedef struct {
+    uint32_t width;
+    uint32_t height;
+    uint32_t size;
+    uint32_t* data;
+} screen_buffer_t;
+
+extern screen_buffer_t screen_buffer;
 
 void extern_screen_init(); //Extern
 void screen_init();
-
-void allocate_buffer(); //Extern
 
 void screen_frame(); //Extern
 

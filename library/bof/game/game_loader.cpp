@@ -51,9 +51,16 @@ void load_game() {
 
     debug_info("Starting virual runtime...");
     vm_init(&virtual_machine, &program);
+}
 
+void game_init() {
     debug_info("Running game init...");
-    vm_run(&virtual_machine, program.start_address);
+
+    uint64_t start_address = virtual_machine.game_loop_address;
+    virtual_machine.game_loop_address = UINT64_MAX;
+
+    vm_run(&virtual_machine, start_address);
+
     debug_info("Game loaded!");
 }
 

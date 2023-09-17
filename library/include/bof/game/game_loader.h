@@ -14,5 +14,6 @@ extern game_vm_t virtual_machine;
 game_file_t load_game_file();
 
 void load_game();
+void game_init();
 void game_loop();
 void destroy_game();

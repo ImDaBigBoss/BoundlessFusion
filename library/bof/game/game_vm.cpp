@@ -10,7 +10,7 @@
 
 void vm_init(game_vm_t* vm, game_program_t* program) {
     memset(vm, 0, sizeof(game_vm_t)); //This will set the registers to 0
-    vm->game_loop_address = UINT64_MAX;
+    vm->game_loop_address = program->start_address;
 
     //Allocate memory pool
     init_pool(&vm->memory_pool, program);
@@ -64,7 +64,7 @@ uint64_t vm_stack_pop(game_vm_t* vm) {
 
 #define CHECK_ADDRESS_BOUNDS(address) \
     if (address > vm->memory_pool.program_size) { \
-        debug_error("Attempted to run program outside of reserved memory\n"); \
+        debug_error("Attempted to run program outside of reserved memory"); \
         lib_exit(3); \
     }
 

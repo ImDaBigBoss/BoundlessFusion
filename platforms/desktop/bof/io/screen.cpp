@@ -9,10 +9,7 @@
 
 #include <GLFW/glfw3.h>
 
-uint32_t screen_width;
-uint32_t screen_height;
-extern uint32_t buffer_size;
-extern uint32_t* screen_buffer;
+extern screen_buffer_t screen_buffer;
 
 GLFWwindow* window;
 
@@ -32,13 +29,38 @@ void error_handle() {
 }
 
 void window_resized_int(GLFWwindow* window, int width, int height) {
-    glfwGetFramebufferSize(window, (int*) &screen_width, (int*) &screen_height);
-    glViewport(0, 0, screen_width, screen_height);
+    glfwGetFramebufferSize(window, (int*) &screen_buffer.width, (int*) &screen_buffer.height);
+    glViewport(0, 0, screen_buffer.width, screen_buffer.height);
 
+    //If the window is too large, scale the buffer down keeping the aspect ratio
+    float scale = 1.0f;
+    if (screen_buffer.width > SCREEN_MAX_WIDTH || screen_buffer.height > SCREEN_MAX_HEIGHT) {
+        float aspect_ratio = (float) screen_buffer.width / (float) screen_buffer.height;
+        float old_width = screen_buffer.width;
+        if (screen_buffer.width > SCREEN_MAX_WIDTH) {
+            screen_buffer.width = SCREEN_MAX_WIDTH;
+            screen_buffer.height = (int) (screen_buffer.width / aspect_ratio);
+        } else {
+            screen_buffer.height = SCREEN_MAX_HEIGHT;
+            screen_buffer.width = (int) (screen_buffer.height * aspect_ratio);
+        }
+        scale = old_width / (float) screen_buffer.width;
+    }
+
+    //TODO: Setup content scaling for HiDPI displays
+
+    //Make the buffer start at the top left
     glRasterPos2f(-1, 1);
-    glPixelZoom(1, -1);
+    glPixelZoom(scale, -scale);
 
-    allocate_buffer();
+    //Allocate the buffer
+    if (screen_buffer.data) {
+        free(screen_buffer.data);
+    }
+
+    screen_buffer.size = screen_buffer.width * screen_buffer.height * sizeof(uint32_t);
+    screen_buffer.data = (uint32_t*) malloc(screen_buffer.size);
+    memset(screen_buffer.data, 0, screen_buffer.size);
 }
 
 // --- Exposed functions ---
@@ -59,7 +81,6 @@ void extern_screen_init() {
         lib_exit(1);
     }
 
-    glfwGetFramebufferSize(window, (int*) &screen_width, (int*) &screen_height);
     glfwSetWindowSizeLimits(window, 300, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     //Make window visible
@@ -67,24 +88,10 @@ void extern_screen_init() {
     glfwMakeContextCurrent(window);
     glfwShowWindow(window);
 
-    //TODO: Setup content scaling for HiDPI displays
-
-    //Make the buffer start at the top left
-    glRasterPos2f(-1, 1);
-    glPixelZoom(1, -1);
+    window_resized_int(window, 0, 0);
 
     //Setup callbacks
     glfwSetWindowSizeCallback(window, window_resized_int);
-}
-
-void allocate_buffer() {
-    if (screen_buffer) {
-        free(screen_buffer);
-    }
-
-    buffer_size = screen_width * screen_height * sizeof(uint32_t);
-    screen_buffer = (uint32_t*) malloc(buffer_size);
-    memset(screen_buffer, 0, buffer_size);
 }
 
 void screen_frame() {
@@ -92,7 +99,7 @@ void screen_frame() {
         lib_exit(1);
     }
 
-    glDrawPixels(screen_width, screen_height, GL_RGBA, GL_UNSIGNED_BYTE, screen_buffer);
+    glDrawPixels(screen_buffer.width, screen_buffer.height, GL_RGBA, GL_UNSIGNED_BYTE, screen_buffer.data);
 
     glfwSwapBuffers(window);
     glfwPollEvents();

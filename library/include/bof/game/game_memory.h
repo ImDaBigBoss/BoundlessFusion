@@ -2,6 +2,8 @@
 
 #include <bof/game/game.h>
 
+#include <bof/io/screen.h>
+
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -18,6 +20,9 @@ typedef struct {
     uint64_t stack_start;
     uint64_t stack_size;
     uint64_t* stack_data;
+
+    uint64_t framebuffer_start;
+    screen_buffer_t* framebuffer_data;
 
     uint64_t heap_start;
     memory_block_t** blocks;

@@ -11,7 +11,7 @@
 
 void expand_pool(memory_pool_t* pool, int blocks) {
     if (blocks <= 0) {
-        debug_error("Invalid block count\n");
+        debug_error("Invalid block count");
         lib_exit(2);
     }
 
@@ -22,14 +22,14 @@ void expand_pool(memory_pool_t* pool, int blocks) {
         pool->blocks = (memory_block_t**) malloc(pool->block_count * sizeof(memory_block_t*));
     }
     if (pool->blocks == NULL) {
-        debug_error("Failed to allocate new block index\n");
+        debug_error("Failed to allocate new block index");
         lib_exit(2);
     }
 
     for (int i = pool->block_count - blocks; i < pool->block_count; i++) {
         void* new_block = (memory_block_t*) malloc(sizeof(memory_block_t));
         if (new_block == NULL) {
-            debug_error("Failed to allocate new block\n");
+            debug_error("Failed to allocate new block");
             lib_exit(2);
         }
         memset(new_block, 0, sizeof(memory_block_t));
@@ -43,19 +43,19 @@ void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size
     if (address < pool->heap_start) {
         if (address < pool->program_size) {
             if (address + size > pool->program_size) {
-                debug_error("Attempted to write from program data outside of reserved memory\n");
+                debug_error("Attempted to write from program data outside of reserved memory");
                 lib_exit(2);
             }
 
             memcpy((void*) (pool->program_data + address), buffer, size);
         } else if (address < pool->stack_start) {
-            debug_error("Attempted to write to reserved memory\n");
+            debug_error("Attempted to write to reserved memory");
             lib_exit(2);
         } else {
             uint64_t stack_address = address - pool->stack_start;
 
             if (stack_address + size > pool->stack_size) {
-                debug_error("Attempted to write to stack outside of reserved memory\n");
+                debug_error("Attempted to write to stack outside of reserved memory");
                 lib_exit(2);
             }
 
@@ -73,7 +73,7 @@ void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size
         uint64_t block_offset = current_address % BLOCK_SIZE;
 
         if (block_id >= pool->block_count) {
-            debug_error("Invalid block ID\n");
+            debug_error("Invalid block ID");
             lib_exit(2);
         }
 
@@ -95,19 +95,19 @@ void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size)
     if (address < pool->heap_start) {
         if (address < pool->program_size) { //Program data
             if (address + size > pool->program_size) {
-                debug_error("Attempted to read from program data outside of reserved memory %x %x %x\n", address, address + size, pool->program_size);
+                debug_error("Attempted to read from program data outside of reserved memory %x %x %x", address, address + size, pool->program_size);
                 lib_exit(2);
             }
 
             memcpy(buffer, (void*) (pool->program_data + address), size);
         } else if (address < pool->stack_start) { //Memory after program data but before stack
-            debug_error("Attempted to read from reserved memory\n");
+            debug_error("Attempted to read from reserved memory");
             lib_exit(2);
         } else {
             uint64_t stack_address = address - pool->stack_start;
 
             if (stack_address + size > pool->stack_size) {
-                debug_error("Attempted to read from stack outside of reserved memory\n");
+                debug_error("Attempted to read from stack outside of reserved memory");
                 lib_exit(2);
             }
 
@@ -125,7 +125,7 @@ void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size)
         uint64_t block_offset = current_address % BLOCK_SIZE;
 
         if (block_id >= pool->block_count) {
-            debug_error("Invalid block ID\n");
+            debug_error("Invalid block ID");
             lib_exit(2);
         }
 
@@ -145,7 +145,7 @@ void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size)
 
 
 void init_pool(memory_pool_t* pool, game_program_t* program) {
-    debug_info("Initializing memory pool\n");
+    debug_info("Initializing memory pool");
     memset(pool, 0, sizeof(memory_pool_t));
 
     //Program data starts at 0
@@ -162,6 +162,8 @@ void init_pool(memory_pool_t* pool, game_program_t* program) {
     pool->stack_size = BLOCK_SIZE;
     pool->stack_data = (uint64_t*) malloc(pool->stack_size);
 
+    //TODO: Include framebuffer in memory pool
+
     //Heap
     pool->heap_start = (pool->stack_start + pool->stack_size) + 10; //10 bytes of padding
     if (pool->heap_start % 0x10 > 0) { //Align to 16 bytes
@@ -171,7 +173,7 @@ void init_pool(memory_pool_t* pool, game_program_t* program) {
 }
 
 void destroy_pool(memory_pool_t* pool) {
-    debug_info("Destroying memory pool\n");
+    debug_info("Destroying memory pool");
 
     free(pool->program_data);
     free(pool->stack_data);

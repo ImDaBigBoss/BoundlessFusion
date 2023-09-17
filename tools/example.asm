@@ -9,6 +9,12 @@ init:
     ret
 
 loop:
+    ret
+
+
+
+
+
     mov r1, 1 ; Level: info
     mov r2, 21 ; String length
     mov r3, $magical_string

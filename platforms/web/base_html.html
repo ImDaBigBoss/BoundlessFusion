@@ -26,6 +26,9 @@
   <body>
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script>
+      let display_max_width = 300;
+      let display_max_height = 200;
+
       const display_canvas = document.getElementById("canvas");
       display_canvas.addEventListener("webglcontextlost", function(e) {
         alert("WebGL context lost. You will need to reload the page.");
@@ -34,11 +37,25 @@
 
       //Canvas sizing
       const canvas_ctx = canvas.getContext("2d");
-      canvas_ctx.canvas.width = window.innerWidth;
-      canvas_ctx.canvas.height = window.innerHeight;
+      function size_canwas() {
+        if (window.innerWidth > display_max_width || window.innerHeight > display_max_height) {
+          let aspect_ratio = window.innerWidth / window.innerHeight;
+          if (window.innerWidth > display_max_width) {
+            canvas_ctx.canvas.width = display_max_width;
+            canvas_ctx.canvas.height = display_max_width / aspect_ratio;
+          } else {
+            canvas_ctx.canvas.width = display_max_height * aspect_ratio;
+            canvas_ctx.canvas.height = display_max_height;
+          }
+        } else {
+          canvas_ctx.canvas.width = window.innerWidth;
+          canvas_ctx.canvas.height = window.innerHeight;
+        }
+      }
+      size_canwas();
+
       window.addEventListener("resize", (event) => {
-        canvas_ctx.canvas.width = window.innerWidth;
-        canvas_ctx.canvas.height = window.innerHeight;
+        size_canwas();
       });
 
       //WASM module setup
