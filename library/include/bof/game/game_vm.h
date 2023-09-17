@@ -4,9 +4,6 @@
 
 #include <bof/game/game_memory.h>
 
-#define REGISTER_COUNT 6
-#define STACK_SIZE (4096 * 1000) //4 MB
-
 typedef union {
     volatile uint64_t raw;
     struct {
@@ -19,7 +16,7 @@ typedef union {
 } flags_t;
 
 typedef union {
-    volatile uint64_t raw[REGISTER_COUNT];
+    volatile uint64_t raw[6];
     struct {
         volatile uint64_t r1; //General purpose registers
         volatile uint64_t r2;

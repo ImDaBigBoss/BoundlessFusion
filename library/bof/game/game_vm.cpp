@@ -76,17 +76,36 @@ uint64_t vm_stack_pop(game_vm_t* vm) {
     *((uint64_t*) (vm->memory_pool.program_data + vm->registers.pc)); \
     vm->registers.pc += 8
 
+#define JUMP_FUNCTION(condition) \
+    uint8_t mode = READ_UINT8(); \
+    uint64_t address; \
+    \
+    if (mode == 1) { /*Immediate*/ \
+        address = READ_UINT64(); \
+    } else if (mode == 2) { /*Register*/ \
+        uint8_t reg = READ_UINT8() - 1; \
+        address = vm->registers.raw[reg]; \
+    } else { \
+        debug_error("Invalid branching mode %d", mode); \
+        lib_exit(3); \
+    } \
+    \
+    if (condition) { \
+        CHECK_ADDRESS_BOUNDS(address) \
+        vm->registers.pc = address; \
+    }
+
 void vm_run(game_vm_t* vm, uint64_t address) {
     CHECK_ADDRESS_BOUNDS(address)
 
     vm->registers.pc = address;
     int running_functions = 1;
 
-    vm_register_dump(vm);
+    //vm_register_dump(vm);
 
     while (running_functions != 0) {
         uint8_t opcode = READ_UINT8();
-        debug_info("Running opcode 0x%x at address 0x%x", opcode, vm->registers.pc);
+        //debug_info("Running opcode 0x%x at address 0x%x", opcode, vm->registers.pc);
 
         switch (opcode) {
             case 0x00: {
@@ -210,22 +229,7 @@ void vm_run(game_vm_t* vm, uint64_t address) {
 
             // --- Branching ---
             case 0x20: { //Call
-                uint8_t mode = READ_UINT8();
-                uint64_t address = UINT64_MAX;
-
-                if (mode == 1) { //Immediate
-                    address = READ_UINT64();
-                } else if (mode == 2) { //Register
-                    uint8_t reg = READ_UINT8() - 1;
-                    address = vm->registers.raw[reg];
-                } else {
-                    debug_error("Invalid branching mode %d", mode);
-                    lib_exit(3);
-                }
-
-                CHECK_ADDRESS_BOUNDS(address)
-                vm_stack_push(vm, vm->registers.pc);
-                vm->registers.pc = address;
+                JUMP_FUNCTION(vm_stack_push(vm, vm->registers.pc); true)
                 running_functions++;
                 break;
             }
@@ -237,7 +241,34 @@ void vm_run(game_vm_t* vm, uint64_t address) {
                 running_functions--;
                 break;
             }
-            //TODO: Implement conditional branching
+            case 0x22: { //Jump
+                JUMP_FUNCTION(true)
+                break;
+            }
+            case 0x23: { //Jump equal
+                JUMP_FUNCTION(vm->flags.zero)
+                break;
+            }
+            case 0x24: { //Jump not equal
+                JUMP_FUNCTION(!vm->flags.zero)
+                break;
+            }
+            case 0x25: { //Jump greater than
+                JUMP_FUNCTION(!vm->flags.zero && !vm->flags.negative)
+                break;
+            }
+            case 0x26: { //Jump greater than or equal
+                JUMP_FUNCTION(vm->flags.zero || !vm->flags.negative)
+                break;
+            }
+            case 0x27: { //Jump less than
+                JUMP_FUNCTION(vm->flags.negative)
+                break;
+            }
+            case 0x28: { //Jump less than or equal
+                JUMP_FUNCTION(vm->flags.zero || vm->flags.negative)
+                break;
+            }
 
             // --- Misc ---
             case 0x30: { //Compare registers
@@ -315,6 +346,6 @@ void vm_run(game_vm_t* vm, uint64_t address) {
             }
         }
 
-        vm_register_dump(vm);
+        //vm_register_dump(vm);
     }
 }

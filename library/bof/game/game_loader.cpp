@@ -52,17 +52,6 @@ void load_game() {
     debug_info("Starting virual runtime...");
     vm_init(&virtual_machine, &program);
 
-    //Print game data
-    int i = 0;
-    while (i < program.size) {
-        if (i % 16 == 0) {
-            debug_raw("\n %04X: ", i);
-        }
-        debug_raw("%02X ", ((uint8_t*) program.data)[i]);
-        i++;
-    }
-    debug_raw("\n");
-
     debug_info("Running game init...");
     vm_run(&virtual_machine, program.start_address);
     debug_info("Game loaded!");

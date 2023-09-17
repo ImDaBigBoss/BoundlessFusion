@@ -29,7 +29,6 @@ void lib_init(int argc, char** argv) {
 void lib_loop() {
     frame_tick();
     debug_info("Frame took %f ms (%d FPS)", frame_time, fps);
-    vm_register_dump(&virtual_machine);
 
     //TODO: Call the game loop
 
