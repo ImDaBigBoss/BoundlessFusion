@@ -22,7 +22,7 @@ void vm_destroy(game_vm_t* vm) {
 }
 
 void vm_register_dump(game_vm_t* vm) {
-    debug_raw("R1 = 0x%x, R2 = 0x%x\nR3 = 0x%x, R4 = 0x%x\nSP = 0x%x, PC = 0x%x\nFLAGS = 0x%x\n\n", vm->registers.r1, vm->registers.r2, vm->registers.r3, vm->registers.r4, vm->registers.sp, vm->registers.pc, vm->flags.raw);
+    debug_raw("R1 = 0x%x, R2 = 0x%x\nR3 = 0x%x, R4 = 0x%x\nR5 = 0x%x, R6 = 0x%x\nR7 = 0x%x, R8 = 0x%x\nSP = 0x%x, PC = 0x%x\nFLAGS = 0x%x\n\n", vm->registers.r1, vm->registers.r2, vm->registers.r3, vm->registers.r4, vm->registers.r5, vm->registers.r6, vm->registers.r7, vm->registers.r8, vm->registers.sp, vm->registers.pc, vm->flags.raw);
 }
 
 
@@ -76,7 +76,7 @@ uint64_t vm_stack_pop(game_vm_t* vm) {
     *((uint64_t*) (vm->memory_pool.program_data + vm->registers.pc)); \
     vm->registers.pc += 8
 
-#define JUMP_FUNCTION(condition) \
+#define JUMP_FUNCTION(condition, before_jump) \
     uint8_t mode = READ_UINT8(); \
     uint64_t address; \
     \
@@ -88,7 +88,9 @@ uint64_t vm_stack_pop(game_vm_t* vm) {
     } else { \
         debug_error("Invalid branching mode %d", mode); \
         lib_exit(3); \
+        return; /*Not required, but removes compiler warnings*/ \
     } \
+    before_jump \
     \
     if (condition) { \
         CHECK_ADDRESS_BOUNDS(address) \
@@ -229,44 +231,49 @@ void vm_run(game_vm_t* vm, uint64_t address) {
 
             // --- Branching ---
             case 0x20: { //Call
-                JUMP_FUNCTION(vm_stack_push(vm, vm->registers.pc); true)
+                JUMP_FUNCTION(true, vm_stack_push(vm, vm->registers.pc + 9);)
                 running_functions++;
                 break;
             }
             case 0x21: { //Return
+                running_functions--;
+                if (running_functions == 0) {
+                    vm->registers.pc = UINT64_MAX;
+                    goto ret_reached;
+                }
+
                 uint64_t address = vm_stack_pop(vm);
                 CHECK_ADDRESS_BOUNDS(address)
 
                 vm->registers.pc = address;
-                running_functions--;
                 break;
             }
             case 0x22: { //Jump
-                JUMP_FUNCTION(true)
+                JUMP_FUNCTION(true,)
                 break;
             }
             case 0x23: { //Jump equal
-                JUMP_FUNCTION(vm->flags.zero)
+                JUMP_FUNCTION(vm->flags.zero,)
                 break;
             }
             case 0x24: { //Jump not equal
-                JUMP_FUNCTION(!vm->flags.zero)
+                JUMP_FUNCTION(!vm->flags.zero,)
                 break;
             }
             case 0x25: { //Jump greater than
-                JUMP_FUNCTION(!vm->flags.zero && !vm->flags.negative)
+                JUMP_FUNCTION(!vm->flags.zero && !vm->flags.negative,)
                 break;
             }
             case 0x26: { //Jump greater than or equal
-                JUMP_FUNCTION(vm->flags.zero || !vm->flags.negative)
+                JUMP_FUNCTION(vm->flags.zero || !vm->flags.negative,)
                 break;
             }
             case 0x27: { //Jump less than
-                JUMP_FUNCTION(vm->flags.negative)
+                JUMP_FUNCTION(vm->flags.negative,)
                 break;
             }
             case 0x28: { //Jump less than or equal
-                JUMP_FUNCTION(vm->flags.zero || vm->flags.negative)
+                JUMP_FUNCTION(vm->flags.zero || vm->flags.negative,)
                 break;
             }
 
@@ -320,17 +327,15 @@ void vm_run(game_vm_t* vm, uint64_t address) {
                 break;
             }
             case 0x44: { //Pusha
-                vm_stack_push(vm, vm->registers.r1);
-                vm_stack_push(vm, vm->registers.r2);
-                vm_stack_push(vm, vm->registers.r3);
-                vm_stack_push(vm, vm->registers.r4);
+                for (int i = 0; i < REGISTERS_COUNT - 2; i++) { //We don't want to store SP and PC
+                    vm_stack_push(vm, vm->registers.raw[i]);
+                }
                 break;
             }
             case 0x45: { //Popa
-                vm->registers.r4 = vm_stack_pop(vm);
-                vm->registers.r3 = vm_stack_pop(vm);
-                vm->registers.r2 = vm_stack_pop(vm);
-                vm->registers.r1 = vm_stack_pop(vm);
+                for (int i = REGISTERS_COUNT - 3; i >= 0; i--) { //We don't want to store SP and PC
+                    vm->registers.raw[i] = vm_stack_pop(vm);
+                }
                 break;
             }
 
@@ -348,4 +353,7 @@ void vm_run(game_vm_t* vm, uint64_t address) {
 
         //vm_register_dump(vm);
     }
+
+    ret_reached:
+    debug_info("Finished executing program section.");
 }

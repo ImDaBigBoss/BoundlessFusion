@@ -9,6 +9,7 @@
 #include <string.h>
 
 game_vm_t virtual_machine;
+uint64_t game_loop_address;
 
 void read_game_file_v1(game_program_t* program, game_file_t* game_file) {
     uint8_t* data = (uint8_t*) game_file->data;
@@ -24,6 +25,7 @@ void read_game_file_v1(game_program_t* program, game_file_t* game_file) {
 
 void load_game() {
     debug_info("Loading game...");
+    game_loop_address = UINT64_MAX;
 
     game_file_t game_file = load_game_file();
     debug_info("Game file loaded (%d bytes)", game_file.size);
@@ -55,6 +57,11 @@ void load_game() {
     debug_info("Running game init...");
     vm_run(&virtual_machine, program.start_address);
     debug_info("Game loaded!");
+}
+
+void game_loop() {
+    debug_info("Running game loop...");
+    vm_run(&virtual_machine, game_loop_address);
 }
 
 void destroy_game() {

@@ -42,6 +42,10 @@ typedef enum {
     R2,
     R3,
     R4,
+    R5,
+    R6,
+    R7,
+    R8,
 
     SP, //Stack pointer
     PC, //Program counter

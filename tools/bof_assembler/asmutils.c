@@ -22,6 +22,22 @@ cpu_register_t get_register(char* str) {
                     return_reg = R4;
                     break;
                 }
+                case '5': {
+                    return_reg = R5;
+                    break;
+                }
+                case '6': {
+                    return_reg = R6;
+                    break;
+                }
+                case '7': {
+                    return_reg = R7;
+                    break;
+                }
+                case '8': {
+                    return_reg = R8;
+                    break;
+                }
             }
         }
         case 'S': {

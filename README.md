@@ -1,6 +1,6 @@
 # Boundless Fusion
 
-Boundless Fusion is a cursed game engine that is designed to be a cross platform masterpiece. Please note that this project is under development, you probably don't want to use it.
+Boundless Fusion is a cursed game engine that is designed to be a cross platform masterpiece. **Please note that this project is under development!**
 
 ## Building
 
@@ -8,7 +8,7 @@ Building should be just as simple as running `make` in the root directory of thi
 
 ## How to use
 
-At the moment, there is no way to use this engine. You can edit the `lib_loop` function in `library/lib_main.cpp`, but that's about it.
+Please head over to the `docs` folder. There you will find a bunch of documentation on how to use this engine. If you have any additional questions, please open an issue or join my [discord server](https://discord.gg/5n8ttQfSqF).
 
 ## Adding a new platform
 

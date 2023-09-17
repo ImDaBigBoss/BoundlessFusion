@@ -7,13 +7,13 @@
 
 #include <bof/util/fps.h>
 
+#include <string.h>
 #include <stdlib.h>
 #include <signal.h>
 
-#define CLOCKS_PER_MS (CLOCKS_PER_SEC / 1000)
-
 void lib_init(int argc, char** argv) {
     debug_info("Boundless Fusion v1.0.0");
+    frame_tick(); //Used in the loop function
 
     //Component initialization
     screen_init();
@@ -29,9 +29,9 @@ void lib_init(int argc, char** argv) {
 void lib_loop() {
     frame_tick();
     debug_info("Frame took %f ms (%d FPS)", frame_time, fps);
+    //vm_register_dump(&virtual_machine);
 
-    //TODO: Call the game loop
-
+    game_loop();
     screen_frame();
 }
 

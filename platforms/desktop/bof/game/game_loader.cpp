@@ -11,7 +11,7 @@
 game_file_t load_game_file() {
     FILE* file = fopen(LIB_GAME_PATH, "rb");
     if (file == NULL) {
-        debug_error("Failed to open game file");
+        debug_error("Failed to open game file at ./%s (does it exist?)", LIB_GAME_PATH);
         lib_exit(1);
     }
 

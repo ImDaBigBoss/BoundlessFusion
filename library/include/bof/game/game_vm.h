@@ -15,19 +15,23 @@ typedef union {
     };
 } flags_t;
 
+#define REGISTERS_COUNT 10
 typedef union {
-    volatile uint64_t raw[6];
+    volatile uint64_t raw[REGISTERS_COUNT];
     struct {
         volatile uint64_t r1; //General purpose registers
         volatile uint64_t r2;
         volatile uint64_t r3;
         volatile uint64_t r4;
+        volatile uint64_t r5;
+        volatile uint64_t r6;
+        volatile uint64_t r7;
+        volatile uint64_t r8;
 
         volatile uint64_t sp; //Stack pointer
         volatile uint64_t pc; //Program counter
     };
 } registers_t;
-
 
 typedef struct {
     //Registers
@@ -37,6 +41,10 @@ typedef struct {
     //Memory
     memory_pool_t memory_pool;
 } game_vm_t;
+
+
+typedef void (*vm_syscall_t)(game_vm_t* vm);
+extern vm_syscall_t vm_syscalls[2];
 
 void vm_init(game_vm_t* vm, game_program_t* program);
 void vm_destroy(game_vm_t* vm);

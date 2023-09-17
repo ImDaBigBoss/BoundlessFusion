@@ -15,6 +15,8 @@ bool game_loaded;
 uint64_t game_size;
 void* game_data;
 
+EM_JS(void, browser_alert, (char* message), { alert(message); });
+
 void downloadSucceeded(emscripten_fetch_t *fetch) {
     game_data = malloc(fetch->numBytes);
     memcpy(game_data, fetch->data, fetch->numBytes);
@@ -27,6 +29,10 @@ void downloadSucceeded(emscripten_fetch_t *fetch) {
 
 void downloadFailed(emscripten_fetch_t *fetch) {
     debug_error("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
+    EM_ASM(
+        alert("Failed to download game binary at game.bof. Please check the console for more information.");
+    );
+
     emscripten_fetch_close(fetch);
 
     game_size = 0;

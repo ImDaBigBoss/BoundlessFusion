@@ -3,6 +3,12 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+//TODO: Understand why only every other tag to replace is replaced.
+// Example:
+// Input: "%x, %x, %x, %x", values {1, 2, 3, 4}
+// Output: "1, 0, 2, 0"
+// Expected: "1, 2, 3, 4"
+
 void debug_raw(const char* format, ...) {
     va_list args;
     va_start(args, format);
@@ -11,7 +17,7 @@ void debug_raw(const char* format, ...) {
 }
 
 void debug_info(const char* format, ...) {
-    printf("[INFO] "); // Green
+    printf("[INFO] ");
 
     va_list args;
     va_start(args, format);
@@ -22,7 +28,7 @@ void debug_info(const char* format, ...) {
 }
 
 void debug_warn(const char* format, ...) {
-    printf("[WARN] "); // Yellow
+    printf("[WARN] ");
 
     va_list args;
     va_start(args, format);
@@ -33,7 +39,7 @@ void debug_warn(const char* format, ...) {
 }
 
 void debug_error(const char* format, ...) {
-    printf("[ERROR] "); // Red
+    printf("[ERROR] ");
 
     va_list args;
     va_start(args, format);
