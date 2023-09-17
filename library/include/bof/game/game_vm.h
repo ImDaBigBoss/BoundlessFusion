@@ -1,7 +1,6 @@
 #pragma once
 
 #include <bof/game/game.h>
-
 #include <bof/game/game_memory.h>
 
 typedef union {
@@ -40,11 +39,10 @@ typedef struct {
 
     //Memory
     memory_pool_t memory_pool;
+
+    uint64_t game_loop_address;
 } game_vm_t;
 
-
-typedef void (*vm_syscall_t)(game_vm_t* vm);
-extern vm_syscall_t vm_syscalls[2];
 
 void vm_init(game_vm_t* vm, game_program_t* program);
 void vm_destroy(game_vm_t* vm);

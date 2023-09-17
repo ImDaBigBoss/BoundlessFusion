@@ -10,7 +10,6 @@ typedef struct {
 } game_file_t;
 
 extern game_vm_t virtual_machine;
-extern uint64_t game_loop_address;
 
 game_file_t load_game_file();
 

@@ -24,6 +24,8 @@ void lib_init(int argc, char** argv) {
     //Signal handling
     signal(SIGINT, lib_exit);
     signal(SIGTERM, lib_exit);
+
+    debug_raw("\n");
 }
 
 void lib_loop() {

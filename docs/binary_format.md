@@ -26,9 +26,9 @@ This format is extremely simple, it is composed of a header followed by raw opco
 ### Opcodes
 
 Definitions:
- - REG ID: A register ID, from 1 to 10 inclusive
- - IMMU?: An immediate unsigned int of the specified size
- - IMMS?: An immediate signed int of the specified size
+ - REG ID: A register ID, from 0x1 to 0xA inclusive (1 byte)
+ - IMMU?: An immediate unsigned int of the specified size in bits
+ - IMMS?: An immediate signed int of the specified size in bits
  - JMP OPS: 0x01 for immediate, 0x02 for register followed by REG ID or IMMU64 (depending on the previous byte)
 
 | Opcode | Mnemonic | Operands       | Description |

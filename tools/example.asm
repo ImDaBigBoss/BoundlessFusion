@@ -1,18 +1,29 @@
 ; Text section
 
 init:
-    mov r1, 0x12
-    mov r2, 0x34
-    mov r3, 0x56
-    mov r4, 0x78
-    mov r5, 0x9a
-    mov r6, 0xbc
-    mov r7, 0xde
-    mov r8, 0xf0
+    mov r1, $loop
+    syscall 1 ; Set the loop address
+
+    mov r4, 10
 
     ret
+
+loop:
+    mov r1, 1 ; Level: info
+    mov r2, 21 ; String length
+    mov r3, $magical_string
+    syscall 4 ; Print string
+
+    dec r4
+    cmp r4, 0
+    je $end
+
+    ret
+
+end:
+    hlt
 
 ; Data section
 
 magical_string:
-    db "This is a test string", 0x20, 0x0
+    db "This is a test string", 0x0

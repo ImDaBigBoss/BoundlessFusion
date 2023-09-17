@@ -1,4 +1,5 @@
 #include <bof/game/game_vm.h>
+#include <bof/game/syscalls.h>
 
 #include <bof/io/debug.h>
 
@@ -9,9 +10,11 @@
 
 void vm_init(game_vm_t* vm, game_program_t* program) {
     memset(vm, 0, sizeof(game_vm_t)); //This will set the registers to 0
+    vm->game_loop_address = UINT64_MAX;
 
     //Allocate memory pool
     init_pool(&vm->memory_pool, program);
+    register_syscalls();
 
     //Stack start addess: vm->memory_pool.stack_start vm->memory_pool.stack_size
     vm->registers.sp = vm->memory_pool.stack_start + vm->memory_pool.stack_size;
@@ -303,7 +306,12 @@ void vm_run(game_vm_t* vm, uint64_t address) {
             }
             case 0x32: { //Syscall
                 uint64_t syscall_id = READ_UINT64();
-                debug_warn("Unhandled syscall %d", syscall_id);
+                if (syscall_id == 0 || syscall_id > SYSCALL_COUNT) {
+                    debug_error("Invalid syscall id %d", syscall_id);
+                    lib_exit(3);
+                }
+
+                vm_syscalls[syscall_id - 1](vm);
                 break;
             }
 
@@ -355,5 +363,6 @@ void vm_run(game_vm_t* vm, uint64_t address) {
     }
 
     ret_reached:
-    debug_info("Finished executing program section.");
+    return;
+    //debug_info("Finished executing program section.");
 }
