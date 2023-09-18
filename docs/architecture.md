@@ -31,3 +31,4 @@ This is just a block of memory that is reserved for this purpose. Much like x86,
 | 3       | Allocate memory. R1 is the number of memory blocks to allocate. |
 | 4       | Debug print. R1 is the debug level (0: raw, 1: info, 2: warning, 3: error), R2 is the length of the string, R3 is the address of the string. |
 | 5       | Dump registers. This will dump all registers to the debug log. |
+| 6       | Get the framebuffer information. R1 is the address of the framebuffer, R2 is the width, R3 is the height. |

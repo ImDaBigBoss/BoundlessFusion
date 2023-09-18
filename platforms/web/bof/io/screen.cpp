@@ -23,7 +23,6 @@ void allocate_buffer() {
     screen_buffer.width = screen->w;
     screen_buffer.height = screen->h;
 
-    screen_buffer.size = screen_buffer.width * screen_buffer.height * sizeof(uint32_t);
     screen_buffer.data = (uint32_t*) screen->pixels;
 }
 

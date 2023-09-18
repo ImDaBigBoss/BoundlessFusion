@@ -9,22 +9,26 @@
 
 #define BLOCK_SIZE 4194304
 
+extern uint64_t stack_buffer[BLOCK_SIZE / sizeof(uint64_t)];
+
 typedef struct {
     char data[BLOCK_SIZE];
 } memory_block_t;
 
 typedef struct {
-    uint8_t* program_data;
     uint64_t program_size;
+    uint8_t* program_data;
 
     uint64_t stack_start;
     uint64_t stack_size;
     uint64_t* stack_data;
 
     uint64_t framebuffer_start;
+    uint64_t framebuffer_size; //This is only the memory allocation, not the w x h
     screen_buffer_t* framebuffer_data;
 
     uint64_t heap_start;
+    uint64_t heap_size;
     memory_block_t** blocks;
     uint64_t block_count;
 } memory_pool_t;

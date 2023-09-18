@@ -25,7 +25,7 @@ void vm_destroy(game_vm_t* vm) {
 }
 
 void vm_register_dump(game_vm_t* vm) {
-    debug_raw("R1 = 0x%x, R2 = 0x%x\nR3 = 0x%x, R4 = 0x%x\nR5 = 0x%x, R6 = 0x%x\nR7 = 0x%x, R8 = 0x%x\nSP = 0x%x, PC = 0x%x\nFLAGS = 0x%x\n\n", vm->registers.r1, vm->registers.r2, vm->registers.r3, vm->registers.r4, vm->registers.r5, vm->registers.r6, vm->registers.r7, vm->registers.r8, vm->registers.sp, vm->registers.pc, vm->flags.raw);
+    debug_raw("R1 = 0x%016llx, R2 = 0x%016llx\nR3 = 0x%016llx, R4 = 0x%016llx\nR5 = 0x%016llx, R6 = 0x%016llx\nR7 = 0x%016llx, R8 = 0x%016llx\nSP = 0x%016llx, PC = 0x%016llx\nFLAGS = 0x%016llx\n\n", vm->registers.r1, vm->registers.r2, vm->registers.r3, vm->registers.r4, vm->registers.r5, vm->registers.r6, vm->registers.r7, vm->registers.r8, vm->registers.sp, vm->registers.pc, vm->flags.raw);
 }
 
 
@@ -38,11 +38,10 @@ void vm_stack_push(game_vm_t* vm, uint64_t value) {
         debug_error("Stack underflow");
         lib_exit(2);
     }
-    
-    uint64_t stack_address = vm->registers.sp - vm->memory_pool.stack_start;
-    vm->registers.sp -= 8;
 
-    vm->memory_pool.stack_data[stack_address] = value;
+    vm->registers.sp -= sizeof(uint64_t);
+    uint64_t* stack_address_ptr = (uint64_t*)((char*)vm->memory_pool.stack_data + (vm->registers.sp - vm->memory_pool.stack_start));
+    *stack_address_ptr = value;
 }
 
 uint64_t vm_stack_pop(game_vm_t* vm) {
@@ -54,11 +53,10 @@ uint64_t vm_stack_pop(game_vm_t* vm) {
         debug_error("Stack underflow");
         lib_exit(2);
     }
-    
-    vm->registers.sp += 8;
-    uint64_t stack_address = vm->registers.sp - vm->memory_pool.stack_start;
 
-    return vm->memory_pool.stack_data[stack_address];
+    uint64_t* stack_address_ptr = (uint64_t*)((char*)vm->memory_pool.stack_data + (vm->registers.sp - vm->memory_pool.stack_start));
+    vm->registers.sp += sizeof(uint64_t);
+    return *stack_address_ptr;
 }
 
 
@@ -72,7 +70,7 @@ uint64_t vm_stack_pop(game_vm_t* vm) {
     vm->memory_pool.program_data[vm->registers.pc++]
 
 #define READ_UINT32() \
-    *((uint32_t*) (vm->memory_pool.program_data + vm->registers.pc)); \
+    *((uint32_t*) (((uint64_t) vm->memory_pool.program_data) + vm->registers.pc)); \
     vm->registers.pc += 4
 
 #define READ_UINT64() \
@@ -353,7 +351,7 @@ void vm_run(game_vm_t* vm, uint64_t address) {
                 break;
             }
             default: {
-                debug_error("Invalid opcode 0x%x at address 0x%x", opcode, vm->registers.pc);
+                debug_error("Invalid opcode 0x%x at address 0x%llx", opcode, vm->registers.pc);
                 lib_exit(3);
                 break;
             }

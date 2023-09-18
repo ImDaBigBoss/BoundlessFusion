@@ -12,6 +12,7 @@
 extern screen_buffer_t screen_buffer;
 
 GLFWwindow* window;
+uint32_t buffer[SCREEN_MAX_WIDTH * SCREEN_MAX_HEIGHT];
 
 // --- Utils ---
 
@@ -52,15 +53,6 @@ void window_resized_int(GLFWwindow* window, int width, int height) {
     //Make the buffer start at the top left
     glRasterPos2f(-1, 1);
     glPixelZoom(scale, -scale);
-
-    //Allocate the buffer
-    if (screen_buffer.data) {
-        free(screen_buffer.data);
-    }
-
-    screen_buffer.size = screen_buffer.width * screen_buffer.height * sizeof(uint32_t);
-    screen_buffer.data = (uint32_t*) malloc(screen_buffer.size);
-    memset(screen_buffer.data, 0, screen_buffer.size);
 }
 
 // --- Exposed functions ---
@@ -80,6 +72,8 @@ void extern_screen_init() {
         error_handle();
         lib_exit(1);
     }
+    
+    screen_buffer.data = buffer;
 
     glfwSetWindowSizeLimits(window, 300, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
 

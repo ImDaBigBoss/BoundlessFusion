@@ -63,6 +63,12 @@ void dump_registers(game_vm_t* vm) {
     vm_register_dump(vm);
 }
 
+void get_framebuffer_info(game_vm_t* vm) {
+    vm->registers.r1 = vm->memory_pool.framebuffer_start;
+    vm->registers.r2 = vm->memory_pool.framebuffer_data->width;
+    vm->registers.r3 = vm->memory_pool.framebuffer_data->height;
+}
+
 void register_syscalls() {
     memset(vm_syscalls, 0, sizeof(vm_syscalls));
 
@@ -71,4 +77,5 @@ void register_syscalls() {
     REGISTER_SYSCALL(3, allocate_memory_blocks);
     REGISTER_SYSCALL(4, debug_print);
     REGISTER_SYSCALL(5, dump_registers);
+    REGISTER_SYSCALL(6, get_framebuffer_info);
 }

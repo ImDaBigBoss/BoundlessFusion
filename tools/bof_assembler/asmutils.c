@@ -1,5 +1,7 @@
 #include <asmutils.h>
 
+#include <string.h>
+
 cpu_register_t get_register(char* str) {
     cpu_register_t return_reg = 0;
 

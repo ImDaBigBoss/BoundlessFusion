@@ -178,6 +178,12 @@ uint64_t* process_number(char* str, int line_num, bool can_be_register, bool* er
             return 0;
         }
 
+        if (strlen(str) > 16) {
+            printf("Error line %d: Hexadecimal number too large\n", line_num);
+            *errors_found = true;
+            return 0;
+        }
+
         value = hex_str_to_num(str);
     } else if (str[0] == '0' && str[1] == 'b') { //Binary
         str += 2;
@@ -185,6 +191,12 @@ uint64_t* process_number(char* str, int line_num, bool can_be_register, bool* er
             
         if (!is_binary(str)) {
             printf("Error line %d: Invalid binary number \"%s\"\n", line_num, str);
+            *errors_found = true;
+            return 0;
+        }
+
+        if (strlen(str) > 64) {
+            printf("Error line %d: Binary number too large\n", line_num);
             *errors_found = true;
             return 0;
         }
@@ -197,6 +209,12 @@ uint64_t* process_number(char* str, int line_num, bool can_be_register, bool* er
             }
 
             printf("Error line %d: Invalid decimal number \"%s\"\n", line_num, str);
+            *errors_found = true;
+            return 0;
+        }
+
+        if (strlen(str) > 20) {
+            printf("Error line %d: Decimal number too large\n", line_num);
             *errors_found = true;
             return 0;
         }
