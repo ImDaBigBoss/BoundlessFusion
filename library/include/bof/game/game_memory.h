@@ -19,13 +19,13 @@ typedef struct {
     uint64_t program_size;
     uint8_t* program_data;
 
-    uint64_t stack_start;
-    uint64_t stack_size;
-    uint64_t* stack_data;
-
     uint64_t framebuffer_start;
     uint64_t framebuffer_size; //This is only the memory allocation, not the w x h
     screen_buffer_t* framebuffer_data;
+
+    uint64_t stack_start;
+    uint64_t stack_size;
+    uint64_t* stack_data;
 
     uint64_t heap_start;
     uint64_t heap_size;

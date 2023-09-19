@@ -1,6 +1,5 @@
 #include <bof/game/game_vm.h>
 #include <bof/game/game_opcodes.h>
-#include <bof/game/syscalls.h>
 
 #include <bof/io/debug.h>
 
@@ -15,9 +14,8 @@ void vm_init(game_vm_t* vm, game_program_t* program) {
 
     //Allocate memory pool
     init_pool(&vm->memory_pool, program);
-    register_syscalls();
 
-    //Stack start addess: vm->memory_pool.stack_start vm->memory_pool.stack_size
+    //Set stack address to the top of the stack
     vm->registers.sp = vm->memory_pool.stack_start + vm->memory_pool.stack_size;
 
     register_opcodes();

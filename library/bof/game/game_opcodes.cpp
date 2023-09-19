@@ -110,7 +110,6 @@ void opcode_stor(game_vm_t* vm, int* running_functions) { //[register] <- regist
 
     uint64_t address = vm->registers.raw[reg1] + displacement;
     write_data(&vm->memory_pool, address, (void*) &vm->registers.raw[reg2], sizeof(uint64_t));
-
 }
 void opcode_load(game_vm_t* vm, int* running_functions) { //register <- [register]
     uint8_t reg1 = READ_UINT8() - 1;
@@ -119,7 +118,6 @@ void opcode_load(game_vm_t* vm, int* running_functions) { //register <- [registe
 
     uint64_t address = vm->registers.raw[reg2] + displacement;
     read_data(&vm->memory_pool, address, (void*) &vm->registers.raw[reg1], sizeof(uint64_t));
-
 }
 
 // --- Branching ---
@@ -277,4 +275,6 @@ void register_opcodes() {
             vm_opcodes[i] = &invalid_opcode;
         }
     }
+
+    register_syscalls();
 }

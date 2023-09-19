@@ -2,21 +2,23 @@
 
 init:
     mov r1, $loop
-    syscall 1 ; Set the loop address
+    syscall 1 ; Set the game loop address
 
-    syscall 6 ; Get framebuffer info
+    mov r1, 1
+    mov r2, 27
+    mov r3, $magical_string
+    syscall 4 ; Print the magical string
 
-    mul r2, r3
-    mov r3, 0
-    mov r4, 1
-    mov r5, 0x00000001
-    mov r6, 0
+    mov r4, 4 ; size of a pixel in bytes
+    mov r5, 1 ; colour increment
+
     ret
 
 loop:
-    push r1
-    push r2
-    mov r3, 0
+    push r3
+    syscall 6 ; Get framebuffer info
+    mul r2, r3
+    pop r3
 
 loop_fill:
     add r3, r5
@@ -24,16 +26,15 @@ loop_fill:
     mov [r1], r3
     add r1, r4
 
-    sub r2, r4
+    dec r2
     cmp r2, 0
     jne $loop_fill
 
 loop_end:
-    pop r2
-    pop r1
+
     ret
 
 ; Data section
 
 magical_string:
-    db "This is a test string", 0x0
+    db "Example program loading...", 0x0

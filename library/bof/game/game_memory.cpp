@@ -47,15 +47,17 @@ void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size
     if (address < pool->heap_start) {
         if (address < pool->program_size) {
             if (address + size > pool->program_size) {
-                debug_error("Attempted to write from program data outside of reserved memory");
+                debug_error("Attempted to write to program data outside of reserved memory");
                 lib_exit(2);
             }
 
             memcpy((void*) (pool->program_data + address), buffer, size);
-        } else if (address < pool->framebuffer_start) {
-            debug_error("Attempted to write to reserved memory");
-            lib_exit(2);
-        } else if (address < pool->framebuffer_size) {
+        } else if (address < pool->framebuffer_start + pool->framebuffer_size) {
+            if (address < pool->framebuffer_start) {
+                debug_error("Attempted to write to reserved memory before framebuffer");
+                lib_exit(2);
+            }
+
             uint64_t framebuffer_address = address - pool->framebuffer_start;
 
             if (framebuffer_address + size > pool->framebuffer_size) {
@@ -63,11 +65,13 @@ void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size
                 lib_exit(2);
             }
 
-            memcpy((void*) (pool->framebuffer_data->data + framebuffer_address), buffer, size);
-        } else if (address < pool->stack_start) {
-            debug_error("Attempted to write to reserved memory");
-            lib_exit(2);
-        } else {
+            memcpy((void*) ((uint64_t) pool->framebuffer_data->data + framebuffer_address), buffer, size);
+        }  else {
+            if (address < pool->stack_start) {
+                debug_error("Attempted to write to reserved memory before stack");
+                lib_exit(2);
+            }
+
             uint64_t stack_address = address - pool->stack_start;
 
             if (stack_address + size > pool->stack_size) {
@@ -75,7 +79,7 @@ void write_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size
                 lib_exit(2);
             }
 
-            memcpy((void*) (pool->stack_data + stack_address), buffer, size);
+            memcpy((void*) ((uint64_t) pool->stack_data + stack_address), buffer, size);
         }
 
         return;
@@ -121,10 +125,12 @@ void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size)
             }
 
             memcpy(buffer, (void*) (pool->program_data + address), size);
-        } else if (address < pool->framebuffer_start) {
-            debug_error("Attempted to read from reserved memory");
-            lib_exit(2);
-        } else if (address < pool->framebuffer_size) {
+        } else if (address < pool->framebuffer_start + pool->framebuffer_size) {
+            if (address < pool->framebuffer_start) {
+                debug_error("Attempted to read from reserved memory before framebuffer");
+                lib_exit(2);
+            }
+
             uint64_t framebuffer_address = address - pool->framebuffer_start;
 
             if (framebuffer_address + size > pool->framebuffer_size) {
@@ -133,10 +139,12 @@ void read_data(memory_pool_t* pool, uint64_t address, void* buffer, size_t size)
             }
 
             memcpy(buffer, (void*) (pool->framebuffer_data->data + framebuffer_address), size);
-        } else if (address < pool->stack_start) {
-            debug_error("Attempted to read from reserved memory");
-            lib_exit(2);
         } else {
+            if (address < pool->stack_start) {
+                debug_error("Attempted to read from reserved memory before stack");
+                lib_exit(2);
+            }
+
             uint64_t stack_address = address - pool->stack_start;
 
             if (stack_address + size > pool->stack_size) {
@@ -189,10 +197,18 @@ void init_pool(memory_pool_t* pool, game_program_t* program) {
     //Program data starts at 0
     pool->program_data = (uint8_t*) program->data;
     pool->program_size = program->size;
-    pool->program_data[program->size] = 0xFF; //Halt instruction (we reserved the last byte for this in game_loader.cpp)
+    pool->program_data[program->size + 8] = 0xFF; //Halt instruction (we reserved this in game_loader.cpp)
+
+    //Framebuffer
+    pool->framebuffer_start = program->size + 32; //32 bytes of padding
+    if (pool->framebuffer_start % 0x10 > 0) { //Align to 16 bytes
+        pool->framebuffer_start += 0x10 - (pool->framebuffer_start % 0x10);
+    }
+    pool->framebuffer_size = SCREEN_MAX_WIDTH * SCREEN_MAX_HEIGHT * sizeof(uint32_t);
+    //Framebuffer data setup by screen IO
 
     //Stack
-    pool->stack_start = program->size + 32; //32 bytes of padding
+    pool->stack_start = (pool->framebuffer_start + pool->framebuffer_size) + 32; //32 bytes of padding
     if (pool->stack_start % 0x10 > 0) { //Align to 16 bytes
         pool->stack_start += 0x10 - (pool->stack_start % 0x10);
     }
@@ -200,16 +216,8 @@ void init_pool(memory_pool_t* pool, game_program_t* program) {
     pool->stack_data = stack_buffer;
     memset(pool->stack_data, 0, pool->stack_size);
 
-    //Framebuffer
-    pool->framebuffer_start = (pool->stack_start + pool->stack_size) + 32; //32 bytes of padding
-    if (pool->framebuffer_start % 0x10 > 0) { //Align to 16 bytes
-        pool->framebuffer_start += 0x10 - (pool->framebuffer_start % 0x10);
-    }
-    pool->framebuffer_size = SCREEN_MAX_WIDTH * SCREEN_MAX_HEIGHT * sizeof(uint32_t);
-    //Framebuffer data setup by screen IO
-
     //Heap
-    pool->heap_start = (pool->framebuffer_start + pool->framebuffer_size) + 10; //10 bytes of padding
+    pool->heap_start = (pool->stack_start + pool->stack_size) + 10; //10 bytes of padding
     if (pool->heap_start % 0x10 > 0) { //Align to 16 bytes
         pool->heap_start += 0x10 - (pool->heap_start % 0x10);
     }
