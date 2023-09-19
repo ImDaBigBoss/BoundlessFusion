@@ -8,14 +8,15 @@ init:
 
     mul r2, r3
     mov r3, 0
-    mov r4, 2
-    mov r5, 0x0000000100000001
+    mov r4, 1
+    mov r5, 0x00000001
     mov r6, 0
     ret
 
 loop:
     push r1
     push r2
+    mov r3, 0
 
 loop_fill:
     add r3, r5

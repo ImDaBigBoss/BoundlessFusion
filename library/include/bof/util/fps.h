@@ -4,6 +4,6 @@
 
 extern clock_t last_frame;
 extern int fps;
-extern double frame_time;
+extern float frame_time;
 
 void frame_tick();

@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.aljs": "javascript",
+        "__locale": "cpp",
+        "locale": "cpp",
+        "thread": "cpp"
+    }
+}
